@@ -1,18 +1,57 @@
-<?php
-/**
- * Front Page Template — ProTAS
- */
-get_header();
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProTAS — Progres Tugas Akhir Skripsi</title>
+  <meta name="description" content="Platform digital untuk pemantauan progres tugas akhir dan skripsi mahasiswa." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/admin-login.css" />
+</head>
+<body>
 
-$theme_uri = get_template_directory_uri();
-?>
+<!-- ── MOBILE MENU ── -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="#fitur">Fitur</a>
+  <a href="#cara-kerja">Cara Kerja</a>
+  <a href="#pengguna">Pengguna</a>
+  <a href="#faq">FAQ</a>
+  <a href="#" class="admin-login-trigger">Masuk Admin</a>
+  <a href="#mulai" class="btn btn-primary" style="font-size:18px;padding:14px 32px;border-radius:14px;margin-top:8px;">Mulai Sekarang</a>
+</div>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">PT</div>
+      <span class="nav-logo-text">Pro<span>TAS</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#fitur">Fitur</a></li>
+      <li><a href="#cara-kerja">Cara Kerja</a></li>
+      <li><a href="#pengguna">Pengguna</a></li>
+      <li><a href="#progres">Progres</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-ghost admin-login-trigger">Masuk</a>
+      <a href="#mulai" class="btn btn-primary">Coba Gratis →</a>
+    </div>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
 
 <!-- ════════════════════════════════════════════
      HERO — 3D INTERACTIVE SCENE
 ════════════════════════════════════════════ -->
 <section class="hero" id="beranda">
   <div class="hero-bg-grid"></div>
-  <div class="hero-bg-glow" id="her   oGl ow"></div>
+  <div class="hero-bg-glow" id="heroGlow"></div>
   <div class="hero-bg-orb-1"></div>
   <div class="hero-bg-orb-2"></div>
 
@@ -109,7 +148,7 @@ $theme_uri = get_template_directory_uri();
             <!-- ① MAIN PHONE — center-front, largest -->
             <div class="phone-3d phone-main">
               <div class="phone-inner">
-                <img src="<?php echo esc_url( $theme_uri ); ?>/assets/images/dashboard-mahasiswa.png"
+                <img src="assets/images/dashboard-mahasiswa.png"
                      alt="Dashboard Mahasiswa ProTAS" loading="eager" />
               </div>
             </div>
@@ -117,7 +156,7 @@ $theme_uri = get_template_directory_uri();
             <!-- ② LEFT PHONE — top-left, rotateY(28°) shows right face -->
             <div class="phone-3d phone-left">
               <div class="phone-inner">
-                <img src="<?php echo esc_url( $theme_uri ); ?>/assets/images/profile-dosen.png"
+                <img src="assets/images/profile-dosen.png"
                      alt="Profil Dosen ProTAS" loading="lazy" />
               </div>
             </div>
@@ -125,7 +164,7 @@ $theme_uri = get_template_directory_uri();
             <!-- ③ RIGHT PHONE — top-right, rotateY(-26°) shows left face -->
             <div class="phone-3d phone-right">
               <div class="phone-inner">
-                <img src="<?php echo esc_url( $theme_uri ); ?>/assets/images/bimbingan.png"
+                <img src="assets/images/bimbingan.png"
                      alt="Chat Bimbingan ProTAS" loading="lazy" />
               </div>
             </div>
@@ -133,7 +172,7 @@ $theme_uri = get_template_directory_uri();
             <!-- ④ BOTTOM-LEFT PHONE — lower, deeper back -->
             <div class="phone-3d phone-bl">
               <div class="phone-inner">
-                <img src="<?php echo esc_url( $theme_uri ); ?>/assets/images/dashboard-dosen.png"
+                <img src="assets/images/dashboard-dosen.png"
                      alt="Dashboard Dosen ProTAS" loading="lazy" />
               </div>
             </div>
@@ -141,7 +180,7 @@ $theme_uri = get_template_directory_uri();
             <!-- ⑤ BOTTOM-RIGHT PHONE — lowest, furthest back -->
             <div class="phone-3d phone-br">
               <div class="phone-inner">
-                <img src="<?php echo esc_url( $theme_uri ); ?>/assets/images/profile-mahasiswa.png"
+                <img src="assets/images/profile-mahasiswa.png"
                      alt="Profil Mahasiswa ProTAS" loading="lazy" />
               </div>
             </div>
@@ -543,9 +582,33 @@ $theme_uri = get_template_directory_uri();
   </div>
 </footer>
 
+<!-- ── ADMIN LOGIN MODAL ── -->
+<div class="admin-login-backdrop" id="adminLoginBackdrop" aria-hidden="true">
+  <div class="admin-login-modal" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle">
+    <button class="admin-login-close" id="adminLoginClose" type="button" aria-label="Tutup login">×</button>
+    <div class="admin-login-logo">PT</div>
+    <p class="admin-login-eyebrow">Admin Panel</p>
+    <h2 id="adminLoginTitle">Masuk ke Editor ProTAS</h2>
+    <p class="admin-login-desc">Gunakan akun admin untuk mengubah konten landing page secara visual.</p>
+    <form class="admin-login-form" id="adminLoginForm">
+      <label>
+        Username
+        <input id="adminUsername" name="username" type="text" autocomplete="username" placeholder="Masukkan username" required />
+      </label>
+      <label>
+        Password
+        <input id="adminPassword" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password" required />
+      </label>
+      <p class="admin-login-error" id="adminLoginError" aria-live="polite"></p>
+      <button class="btn btn-primary admin-login-submit" type="submit">Masuk ke Admin</button>
+    </form>
+  </div>
+</div>
+
 <div id="toast-container"></div>
 <div id="scroll-top" title="Kembali ke atas">↑</div>
 
-<?php wp_footer(); ?>
+<script src="js/cms.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

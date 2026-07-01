@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin ProTAS</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        margin: 0;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: #06071a;
+        color: #fff;
+      }
+
+      .admin-page {
+        display: flex;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #06071a 0%, #0b0d26 100%);
+      }
+
+      .sidebar {
+        width: 260px;
+        padding: 24px 18px;
+        background: rgba(8, 10, 30, 0.95);
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        font-size: 20px;
+        margin-bottom: 16px;
+      }
+
+      .brand-badge {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, #3b3fd8, #5a5ef0);
+      }
+
+      .nav-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .nav-title {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: rgba(255, 255, 255, 0.42);
+        padding: 6px 10px;
+      }
+
+      .nav-link {
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.8);
+        padding: 10px 12px;
+        border-radius: 10px;
+        transition: 0.2s ease;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        background: rgba(91, 95, 240, 0.2);
+        color: #fff;
+      }
+
+      .main {
+        flex: 1;
+        padding: 24px 28px 36px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .topbar h2 {
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .topbar-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .card {
+        background: rgba(18, 20, 50, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card h3 {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 8px;
+      }
+
+      .stat-card .value {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+
+      .stat-card .trend {
+        font-size: 13px;
+        color: #22c55e;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 18px;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }
+
+      .table th,
+      .table td {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 14px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .badge.active {
+        background: rgba(34, 197, 94, 0.18);
+        color: #86efac;
+      }
+      .badge.pending {
+        background: rgba(249, 115, 22, 0.18);
+        color: #fdba74;
+      }
+      .badge.review {
+        background: rgba(59, 63, 216, 0.2);
+        color: #a5b4fc;
+      }
+
+      .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .activity-item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .activity-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-top: 6px;
+        background: linear-gradient(135deg, #3b3fd8, #5a5ef0);
+        flex-shrink: 0;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: none;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #3b3fd8, #5a5ef0);
+      }
+
+      .btn-dark {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      @media (max-width: 980px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="admin-page">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-badge">PT</div>
+          <span>ProTAS Admin</span>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-title">Utama</div>
+          <a href="#" class="nav-link active">Dashboard</a>
+          <a href="#" class="nav-link">Mahasiswa</a>
+          <a href="#" class="nav-link">Dosen</a>
+          <a href="#" class="nav-link">Bimbingan</a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-title">Lainnya</div>
+          <a href="#" class="nav-link">Laporan</a>
+          <a href="#" class="nav-link">Pengaturan</a>
+          <a href="#" class="nav-link">Keluar</a>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <div>
+            <h2>Dashboard Admin</h2>
+            <p style="color: rgba(255, 255, 255, 0.6); margin-top: 4px">
+              Ringkasan performa sistem ProTAS hari ini
+            </p>
+          </div>
+          <div class="topbar-actions">
+            <a href="#" class="btn btn-dark">+ Buat Laporan</a>
+            <a href="#" class="btn btn-primary">+ Tambah User</a>
+          </div>
+        </div>
+
+        <section class="stats-grid">
+          <div class="card stat-card">
+            <h3>Mahasiswa Aktif</h3>
+            <div class="value">2.400+</div>
+            <div class="trend">▲ 8.2% minggu ini</div>
+          </div>
+          <div class="card stat-card">
+            <h3>Dosen Terdaftar</h3>
+            <div class="value">180+</div>
+            <div class="trend">▲ 3.1% minggu ini</div>
+          </div>
+          <div class="card stat-card">
+            <h3>Bimbingan Hari Ini</h3>
+            <div class="value">86</div>
+            <div class="trend">▲ 12 sesi baru</div>
+          </div>
+          <div class="card stat-card">
+            <h3>Dokumen Direview</h3>
+            <div class="value">34</div>
+            <div class="trend">● Butuh tindakan</div>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <div class="card">
+            <h3 style="margin-bottom: 10px">Daftar Mahasiswa Terbaru</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Program</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Fiki Fauzianto</td>
+                  <td>Informatika</td>
+                  <td><span class="badge active">Aktif</span></td>
+                </tr>
+                <tr>
+                  <td>Rangga Firman</td>
+                  <td>Teknik Informatika</td>
+                  <td><span class="badge pending">Pending</span></td>
+                </tr>
+                <tr>
+                  <td>Ade Putra</td>
+                  <td>Sistem Informasi</td>
+                  <td><span class="badge review">Review</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-bottom: 10px">Aktivitas Terbaru</h3>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-dot"></div>
+                <div>
+                  <strong>Dokumen BAB 5 diupload</strong>
+                  <div style="color: rgba(255, 255, 255, 0.6); font-size: 13px">
+                    oleh Fiki Fauzianto · 10 menit lalu
+                  </div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot"></div>
+                <div>
+                  <strong>Jadwal bimbingan dikonfirmasi</strong>
+                  <div style="color: rgba(255, 255, 255, 0.6); font-size: 13px">
+                    oleh Dosen Hanif · 35 menit lalu
+                  </div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot"></div>
+                <div>
+                  <strong>Mahasiswa baru terdaftar</strong>
+                  <div style="color: rgba(255, 255, 255, 0.6); font-size: 13px">
+                    Rangga Firman · 1 jam lalu
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
