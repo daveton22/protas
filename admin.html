@@ -24,6 +24,7 @@
         <button class="admin-btn admin-btn-soft" id="previewDesktop" type="button">Desktop</button>
         <button class="admin-btn admin-btn-soft" id="previewTablet" type="button">Tablet</button>
         <button class="admin-btn admin-btn-soft" id="previewMobile" type="button">Mobile</button>
+        <button class="admin-btn admin-btn-soft" id="openLeads" type="button">📋 Prospek<span class="leads-badge" id="leadsBadge">0</span></button>
         <button class="admin-btn admin-btn-primary" id="saveState" type="button">Simpan</button>
         <button class="admin-btn admin-btn-danger" id="resetState" type="button">Reset</button>
         <button class="admin-btn admin-btn-soft" id="logoutBtn" type="button">Keluar</button>
@@ -107,6 +108,24 @@
 
   <div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
 
+  <div class="leads-modal-backdrop" id="leadsModalBackdrop" aria-hidden="true">
+    <div class="leads-modal" role="dialog" aria-modal="true" aria-labelledby="leadsModalTitle">
+      <div class="leads-modal-head">
+        <div>
+          <p class="login-eyebrow" style="margin-bottom:4px">Formulir Kontak</p>
+          <h2 id="leadsModalTitle">Prospek Masuk</h2>
+        </div>
+        <button class="leads-modal-close" id="leadsModalClose" type="button" aria-label="Tutup">×</button>
+      </div>
+      <p class="leads-modal-desc">Daftar pengunjung yang mengisi formulir kontak (section "Hubungi Kami") di landing page. Data ini tersimpan secara lokal di browser ini — belum tersambung ke server/database sungguhan.</p>
+      <div class="leads-modal-actions">
+        <button class="admin-btn admin-btn-soft" id="exportLeadsCsv" type="button">⬇ Unduh CSV</button>
+        <button class="admin-btn admin-btn-danger" id="clearLeadsBtn" type="button">Hapus Semua</button>
+      </div>
+      <div class="leads-table-wrap" id="leadsTableWrap"></div>
+    </div>
+  </div>
+
   <template id="landingTemplate">
 <!DOCTYPE html>
 <html lang="id">
@@ -130,6 +149,7 @@
   <a href="#cara-kerja">Cara Kerja</a>
   <a href="#pengguna">Pengguna</a>
   <a href="#faq">FAQ</a>
+  <a href="#kontak">Kontak</a>
   <a href="#" class="admin-login-trigger">Masuk Admin</a>
   <a href="#mulai" class="btn btn-primary" style="font-size:18px;padding:14px 32px;border-radius:14px;margin-top:8px;">Mulai Sekarang</a>
 </div>
@@ -147,6 +167,7 @@
       <li><a href="#pengguna">Pengguna</a></li>
       <li><a href="#progres">Progres</a></li>
       <li><a href="#faq">FAQ</a></li>
+      <li><a href="#kontak">Kontak</a></li>
     </ul>
     <div class="nav-cta">
       <a href="#" class="btn btn-ghost admin-login-trigger">Masuk</a>
@@ -371,6 +392,50 @@
     </div>
   </div>
 </div>
+
+<div class="divider"></div>
+
+<!-- ── UVP (UNIQUE VALUE PROPOSITION) ── -->
+<section class="uvp" id="kenapa-protas">
+  <div class="container">
+    <div class="uvp-header">
+      <div class="section-label reveal">Kenapa ProTAS</div>
+      <h2 class="section-title reveal reveal-delay-1">Bukan Sekadar Pengingat,<br><span class="gradient-text">Satu Ekosistem Bimbingan Utuh</span></h2>
+      <p class="section-desc reveal reveal-delay-2">Kebanyakan mahasiswa memantau skripsi lewat kombinasi grup WhatsApp, spreadsheet manual, dan pertemuan dadakan. ProTAS menggantikan cara kerja yang tercecer itu dengan satu platform yang saling terhubung dari bimbingan pertama sampai sidang.</p>
+    </div>
+    <div class="uvp-compare">
+      <div class="uvp-col uvp-col-old reveal-left">
+        <div class="uvp-col-head">
+          <span class="uvp-col-icon">😓</span>
+          <h3>Cara Lama</h3>
+          <p>WhatsApp + Excel + Tebak Jadwal</p>
+        </div>
+        <ul class="uvp-list">
+          <li class="uvp-item is-no">Progres tiap BAB tercecer di chat grup</li>
+          <li class="uvp-item is-no">Jadwal bimbingan sering bentrok tanpa notifikasi</li>
+          <li class="uvp-item is-no">Revisi dokumen menumpuk dan mudah hilang</li>
+          <li class="uvp-item is-no">Dosen kesulitan memantau banyak mahasiswa sekaligus</li>
+          <li class="uvp-item is-no">Tidak ada data progres yang bisa diukur</li>
+        </ul>
+      </div>
+      <div class="uvp-col uvp-col-new reveal-right">
+        <span class="uvp-col-badge">Rekomendasi</span>
+        <div class="uvp-col-head">
+          <span class="uvp-col-icon">🚀</span>
+          <h3>Dengan ProTAS</h3>
+          <p>Satu platform, semua saling terhubung</p>
+        </div>
+        <ul class="uvp-list">
+          <li class="uvp-item is-yes">Progres per-BAB tercatat rapi secara real-time</li>
+          <li class="uvp-item is-yes">Jadwal bimbingan otomatis dan langsung terkonfirmasi</li>
+          <li class="uvp-item is-yes">Riwayat revisi tersimpan aman, bisa diakses kapan saja</li>
+          <li class="uvp-item is-yes">Dashboard khusus dosen untuk semua mahasiswa bimbingan</li>
+          <li class="uvp-item is-yes">Statistik dan insight progres yang terukur jelas</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
 <div class="divider"></div>
 
@@ -648,6 +713,44 @@
 
 <div class="divider"></div>
 
+<!-- ── GARANSI / RISK REDUCER ── -->
+<section class="guarantee" id="garansi">
+  <div class="container">
+    <div class="guarantee-card reveal">
+      <div class="guarantee-ribbon">💯 Bergaransi</div>
+      <div class="guarantee-header">
+        <div class="section-label">Garansi</div>
+        <h2 class="section-title">Coba Tanpa Ragu,<br><span class="gradient-text">Kami yang Jamin</span></h2>
+        <p class="section-desc">Kami yakin ProTAS akan membantu skripsimu selesai lebih terstruktur — jadi kami menghilangkan semua alasan untuk ragu mencoba.</p>
+      </div>
+      <div class="guarantee-grid">
+        <div class="guarantee-item">
+          <div class="guarantee-icon">🔒</div>
+          <h3>Data 100% Aman</h3>
+          <p>Enkripsi SSL/TLS untuk seluruh dokumen dan percakapan bimbingan. Privasi skripsimu terjamin sepenuhnya.</p>
+        </div>
+        <div class="guarantee-item">
+          <div class="guarantee-icon">↩️</div>
+          <h3>Uang Kembali 30 Hari</h3>
+          <p>Tidak puas dengan paket Premium/Institusi? Ajukan pengembalian dana penuh dalam 30 hari pertama.</p>
+        </div>
+        <div class="guarantee-item">
+          <div class="guarantee-icon">🆓</div>
+          <h3>Gratis, Tanpa Kartu Kredit</h3>
+          <p>Fitur dasar selamanya gratis untuk mahasiswa dan dosen. Tidak perlu kartu kredit untuk mulai memantau progres.</p>
+        </div>
+        <div class="guarantee-item">
+          <div class="guarantee-icon">🎧</div>
+          <h3>Dukungan Responsif</h3>
+          <p>Tim kami siap membantu lewat live chat setiap hari kerja jika kamu mengalami kendala teknis apa pun.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- ── CTA ── -->
 <section class="cta-section" id="mulai">
   <div class="cta-bg-glow"></div>
@@ -670,6 +773,60 @@
   </div>
 </section>
 
+<div class="divider"></div>
+
+<!-- ── CONTACT FORM ── -->
+<section class="contact" id="kontak">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="contact-text">
+        <div class="section-label reveal">Hubungi Kami</div>
+        <h2 class="section-title reveal reveal-delay-1">Ada Pertanyaan atau<br><span class="gradient-text">Mewakili Institusi?</span></h2>
+        <p class="section-desc reveal reveal-delay-2" style="margin-bottom:32px">Tinggalkan data kamu dan tim ProTAS akan menghubungi untuk demo, kerja sama institusi, atau bantuan teknis lainnya.</p>
+        <div class="role-features reveal reveal-delay-3">
+          <div class="role-feature">Direspon dalam waktu 1x24 jam</div>
+          <div class="role-feature">Cocok untuk mahasiswa, dosen, maupun institusi</div>
+          <div class="role-feature">Data kamu tidak dibagikan ke pihak ketiga</div>
+        </div>
+        <div class="contact-direct reveal reveal-delay-4">
+          <div class="float-card-icon" style="background:rgba(91,95,240,.18)">✉️</div>
+          <div class="float-card-text">
+            <span class="float-card-label">Atau email langsung</span>
+            <span class="float-card-value">halo@protas.id</span>
+          </div>
+        </div>
+      </div>
+
+      <form class="contact-form reveal-right" id="contactForm" novalidate>
+        <div class="form-field">
+          <label for="contactName"><span>Nama Lengkap</span></label>
+          <input type="text" id="contactName" name="name" placeholder="Nama kamu" autocomplete="name" required>
+        </div>
+        <div class="form-field">
+          <label for="contactEmail"><span>Email</span></label>
+          <input type="email" id="contactEmail" name="email" placeholder="nama@email.com" autocomplete="email" required>
+        </div>
+        <div class="form-field">
+          <label for="contactRole"><span>Kamu sebagai</span></label>
+          <select id="contactRole" name="role">
+            <option value="Mahasiswa">Mahasiswa</option>
+            <option value="Dosen">Dosen Pembimbing</option>
+            <option value="Institusi">Admin / Institusi</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="contactMessage"><span>Pesan (opsional)</span></label>
+          <textarea id="contactMessage" name="message" rows="3" placeholder="Ceritakan kebutuhanmu..."></textarea>
+        </div>
+        <p class="form-error" id="contactFormError" aria-live="polite"></p>
+        <button type="submit" class="btn btn-primary contact-submit">Kirim Pesan →</button>
+        <p class="contact-form-note">Dengan mengirim, kamu menyetujui data digunakan untuk keperluan follow-up ProTAS.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
 <!-- ── FOOTER ── -->
 <footer class="footer">
   <div class="footer-inner">
@@ -681,9 +838,9 @@
         </a>
         <p>Platform digital untuk pemantauan progres tugas akhir dan skripsi mahasiswa. Memudahkan komunikasi antara mahasiswa dan dosen pembimbing.</p>
       </div>
-      <div class="footer-col"><h4>Platform</h4><ul><li><a href="#fitur">Fitur</a></li><li><a href="#cara-kerja">Cara Kerja</a></li><li><a href="#pengguna">Untuk Pengguna</a></li><li><a href="#progres">Progres</a></li></ul></div>
+      <div class="footer-col"><h4>Platform</h4><ul><li><a href="#kenapa-protas">Kenapa ProTAS</a></li><li><a href="#fitur">Fitur</a></li><li><a href="#cara-kerja">Cara Kerja</a></li><li><a href="#pengguna">Untuk Pengguna</a></li><li><a href="#progres">Progres</a></li></ul></div>
       <div class="footer-col"><h4>Pengguna</h4><ul><li><a href="#">Mahasiswa</a></li><li><a href="#">Dosen Pembimbing</a></li><li><a href="#">Admin Akademik</a></li><li><a href="#">Institusi</a></li></ul></div>
-      <div class="footer-col"><h4>Lainnya</h4><ul><li><a href="#faq">FAQ</a></li><li><a href="#">Kebijakan Privasi</a></li><li><a href="#">Syarat &amp; Ketentuan</a></li><li><a href="#">Hubungi Kami</a></li></ul></div>
+      <div class="footer-col"><h4>Lainnya</h4><ul><li><a href="#faq">FAQ</a></li><li><a href="#garansi">Garansi</a></li><li><a href="#">Kebijakan Privasi</a></li><li><a href="#">Syarat &amp; Ketentuan</a></li><li><a href="#kontak">Hubungi Kami</a></li></ul></div>
     </div>
     <div class="footer-bottom">
       <p>© 2025 <span>ProTAS</span> · Kelompok 10 · Universitas Amikom Yogyakarta</p>
@@ -691,6 +848,7 @@
     </div>
   </div>
 </footer>
+
 
 <!-- ── ADMIN LOGIN MODAL ── -->
 <div class="admin-login-backdrop" id="adminLoginBackdrop" aria-hidden="true">
@@ -722,7 +880,6 @@
 <script src="js/main.js"></script>
 </body>
 </html>
-
   </template>
   <script src="js/cms.js"></script>
   <script src="js/admin.js"></script>

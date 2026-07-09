@@ -17,6 +17,13 @@
   const toast = document.getElementById('adminToast');
   const landingTemplate = document.getElementById('landingTemplate');
   const sectionList = document.getElementById('sectionList');
+  const leadsModalBackdrop = document.getElementById('leadsModalBackdrop');
+  const leadsModalClose = document.getElementById('leadsModalClose');
+  const openLeadsBtn = document.getElementById('openLeads');
+  const leadsBadge = document.getElementById('leadsBadge');
+  const leadsTableWrap = document.getElementById('leadsTableWrap');
+  const exportLeadsCsvBtn = document.getElementById('exportLeadsCsv');
+  const clearLeadsBtn = document.getElementById('clearLeadsBtn');
 
   let frameDoc = null;
   let selectedSection = null;
@@ -114,6 +121,111 @@
     cms.reset();
     loadPreview();
     showToast('Perubahan berhasil direset.');
+  });
+
+  /* ── PROSPEK / LEADS (data dari formulir kontak) ── */
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function formatLeadDate(iso) {
+    try { return new Date(iso).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }); }
+    catch (_) { return iso || '-'; }
+  }
+
+  function getLeads() { return cms.getLeads ? cms.getLeads() : []; }
+
+  function renderLeads() {
+    const leads = getLeads();
+    if (leadsBadge) leadsBadge.textContent = String(leads.length);
+    if (!leadsTableWrap) return;
+
+    if (!leads.length) {
+      leadsTableWrap.innerHTML = '<p class="leads-empty">Belum ada prospek masuk. Data akan muncul di sini saat pengunjung mengisi formulir kontak pada landing page.</p>';
+      return;
+    }
+
+    const rows = leads.map(lead => `
+      <tr>
+        <td>${escapeHtml(lead.name)}</td>
+        <td>${escapeHtml(lead.email)}</td>
+        <td>${escapeHtml(lead.role || '-')}</td>
+        <td class="leads-msg">${escapeHtml(lead.message || '-')}</td>
+        <td>${escapeHtml(formatLeadDate(lead.createdAt))}</td>
+        <td><button class="leads-del-btn" data-lead-id="${escapeHtml(lead.id)}" type="button">Hapus</button></td>
+      </tr>
+    `).join('');
+
+    leadsTableWrap.innerHTML = `
+      <table class="leads-table">
+        <thead><tr><th>Nama</th><th>Email</th><th>Peran</th><th>Pesan</th><th>Waktu</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+
+    leadsTableWrap.querySelectorAll('.leads-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        cms.deleteLead?.(btn.dataset.leadId);
+        renderLeads();
+        showToast('Prospek dihapus.');
+      });
+    });
+  }
+
+  function openLeadsModal() {
+    renderLeads();
+    leadsModalBackdrop?.classList.add('open');
+    leadsModalBackdrop?.setAttribute('aria-hidden', 'false');
+  }
+  function closeLeadsModal() {
+    leadsModalBackdrop?.classList.remove('open');
+    leadsModalBackdrop?.setAttribute('aria-hidden', 'true');
+  }
+
+  openLeadsBtn?.addEventListener('click', openLeadsModal);
+  leadsModalClose?.addEventListener('click', closeLeadsModal);
+  leadsModalBackdrop?.addEventListener('click', e => { if (e.target === leadsModalBackdrop) closeLeadsModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && leadsModalBackdrop?.classList.contains('open')) closeLeadsModal();
+  });
+
+  clearLeadsBtn?.addEventListener('click', () => {
+    if (!getLeads().length) { showToast('Belum ada data prospek.'); return; }
+    const ok = confirm('Hapus semua data prospek? Tindakan ini tidak bisa dibatalkan.');
+    if (!ok) return;
+    cms.clearLeads?.();
+    renderLeads();
+    showToast('Semua prospek berhasil dihapus.');
+  });
+
+  exportLeadsCsvBtn?.addEventListener('click', () => {
+    const leads = getLeads();
+    if (!leads.length) { showToast('Belum ada data untuk diunduh.'); return; }
+    const header = ['Nama', 'Email', 'Peran', 'Pesan', 'Waktu'];
+    const csvRows = [header.join(',')];
+    leads.forEach(l => {
+      const row = [l.name, l.email, l.role || '', (l.message || '').replace(/\r?\n/g, ' '), formatLeadDate(l.createdAt)]
+        .map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
+      csvRows.push(row);
+    });
+    const blob = new Blob(['\uFEFF' + csvRows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `protas-prospek-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('CSV prospek berhasil diunduh.');
+  });
+
+  /* Badge ikut update kalau ada lead baru masuk lewat form di preview iframe
+     (iframe = window terpisah tapi origin sama, jadi event 'storage' nyampe ke sini) */
+  window.addEventListener('storage', e => {
+    if (e.key === cms.LEADS_KEY) renderLeads();
   });
 
   function rgbToHex(value) {
@@ -522,5 +634,6 @@
   });
 
   initGlobalControls();
+  renderLeads();
   requireAuth();
 })();

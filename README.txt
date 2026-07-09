@@ -19,3 +19,38 @@ Catatan penting:
 - Versi revisi ini memakai preview embedded sehingga pemilihan section lebih stabil. Jika browser tetap memblokir penyimpanan localStorage saat dibuka dari file://, jalankan folder ini dengan server lokal, misalnya:
   python -m http.server 8000
   lalu buka http://localhost:8000
+
+──────────────────────────────────────────
+UPDATE — Pelengkap 10 Anatomi Landing Page
+──────────────────────────────────────────
+3 section berikut ditambahkan agar landing page memenuhi ke-10 unsur
+anatomi (headline, sub-headline, hero, UVP, manfaat, fitur, social proof,
+CTA, garansi, formulir kontak):
+
+4. UVP  → section id="kenapa-protas" (setelah Trusted Logos, sebelum Fitur)
+          Perbandingan "Cara Lama" vs "Dengan ProTAS" untuk menegaskan
+          alasan kompetitif memilih ProTAS.
+9. Garansi → section id="garansi" (setelah FAQ, sebelum CTA)
+          4 poin risk-reducer: keamanan data, uang kembali 30 hari
+          (paket Premium/Institusi), gratis tanpa kartu kredit, dan
+          dukungan responsif.
+10. Formulir Kontak → section id="kontak" (setelah CTA, sebelum Footer)
+          Form Nama, Email, Peran, dan Pesan untuk menjaring prospek
+          (mahasiswa/dosen/institusi).
+
+Semua section baru ini otomatis bisa diklik & diedit dari admin.html —
+teks, judul, deskripsi, label, dan tombolnya mengikuti sistem CMS yang
+sama seperti section lain (klik section → edit teks/tombol/warna → Simpan).
+
+Fitur "📋 Prospek" (admin.html, topbar):
+- Setiap kali formulir Kontak di landing page diisi & dikirim, datanya
+  otomatis tersimpan (localStorage, key: protas_cms_leads_v1) dan bisa
+  dilihat admin lewat tombol "📋 Prospek" di pojok kanan atas admin.html.
+- Di situ admin bisa melihat daftar prospek (nama, email, peran, pesan,
+  waktu), menghapus satu per satu atau semua, dan mengunduh sebagai CSV.
+- Karena situs ini statis (tanpa server sungguhan), pengiriman notifikasi
+  email otomatis BELUM tersambung. Untuk produksi nyata, sambungkan
+  fungsi addLead() di js/cms.js ke layanan seperti Formspree, EmailJS,
+  Google Apps Script Web App, atau backend/API buatan sendiri agar data
+  juga terkirim sebagai notifikasi/email sungguhan.
+

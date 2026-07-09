@@ -287,6 +287,49 @@ function showToast(msg, type = 'info') {
   }, 4500);
 }
 
+/* ── CONTACT FORM ── */
+const contactForm      = document.getElementById('contactForm');
+const contactFormError = document.getElementById('contactFormError');
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+contactForm?.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const nameEl    = document.getElementById('contactName');
+  const emailEl   = document.getElementById('contactEmail');
+  const roleEl    = document.getElementById('contactRole');
+  const messageEl = document.getElementById('contactMessage');
+
+  const name    = nameEl?.value.trim()    || '';
+  const email   = emailEl?.value.trim()   || '';
+  const role    = roleEl?.value           || '';
+  const message = messageEl?.value.trim() || '';
+
+  if (!name || !email) {
+    if (contactFormError) contactFormError.textContent = 'Nama dan email wajib diisi.';
+    (!name ? nameEl : emailEl)?.focus();
+    return;
+  }
+  if (!isValidEmail(email)) {
+    if (contactFormError) contactFormError.textContent = 'Format email belum valid.';
+    emailEl?.focus();
+    return;
+  }
+  if (contactFormError) contactFormError.textContent = '';
+
+  /* Situs ini statis (tanpa server/database), jadi data prospek disimpan
+     lewat ProTASCMS.addLead() → localStorage, dan bisa dilihat admin di
+     admin.html lewat tombol "📋 Prospek". Untuk produksi nyata, sambungkan
+     baris di bawah ini juga ke API/backend/email service sungguhan. */
+  window.ProTASCMS?.addLead?.({ name, email, role, message });
+
+  contactForm.reset();
+  showToast('Pesan terkirim! Tim ProTAS akan segera menghubungi kamu.', 'success');
+});
+
 setTimeout(() => showToast('Dosen memberi catatan revisi BAB 5', 'info'),    2800);
 setTimeout(() => showToast('Jadwal bimbingan dikonfirmasi: Senin 14:00', 'success'), 7000);
 setTimeout(() => showToast('Progress BAB 4 berhasil diperbarui!', 'success'), 12000);

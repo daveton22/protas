@@ -3,6 +3,7 @@
 (function () {
   const STORAGE_KEY = 'protas_cms_state_v1';
   const AUTH_KEY = 'protas_admin_auth';
+  const LEADS_KEY = 'protas_cms_leads_v1';
   const ADMIN_USERNAME = 'viki123';
   const ADMIN_PASSWORD = 'amikom123';
 
@@ -78,6 +79,43 @@
     });
   }
 
+  /* ── PROSPEK / LEADS (data formulir kontak) ──
+     Situs ini statis (tanpa server/database sungguhan), jadi data yang
+     dikirim lewat form #kontak disimpan di localStorage browser ini.
+     Admin dapat melihat & mengekspornya lewat tombol "Prospek" di admin.html.
+     Untuk produksi nyata, ganti addLead() di bawah agar juga mengirim
+     data ke backend/API sungguhan (mis. Formspree, EmailJS, atau server sendiri). */
+  function getLeads() {
+    return safeParse(localStorage.getItem(LEADS_KEY), []);
+  }
+
+  function setLeads(list) {
+    localStorage.setItem(LEADS_KEY, JSON.stringify(list));
+  }
+
+  function addLead(lead) {
+    const list = getLeads();
+    const entry = {
+      id: 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      name: (lead?.name || '').slice(0, 120),
+      email: (lead?.email || '').slice(0, 160),
+      role: (lead?.role || '').slice(0, 60),
+      message: (lead?.message || '').slice(0, 1000),
+      createdAt: new Date().toISOString()
+    };
+    list.unshift(entry);
+    setLeads(list);
+    return entry;
+  }
+
+  function deleteLead(id) {
+    setLeads(getLeads().filter(l => l.id !== id));
+  }
+
+  function clearLeads() {
+    localStorage.removeItem(LEADS_KEY);
+  }
+
   function initLandingLogin() {
     const backdrop = document.getElementById('adminLoginBackdrop');
     const form = document.getElementById('adminLoginForm');
@@ -131,12 +169,17 @@
   window.ProTASCMS = {
     STORAGE_KEY,
     AUTH_KEY,
+    LEADS_KEY,
     ADMIN_USERNAME,
     ADMIN_PASSWORD,
     getState,
     setState,
     elementKey,
     applyCmsState,
+    getLeads,
+    addLead,
+    deleteLead,
+    clearLeads,
     reset() { localStorage.removeItem(STORAGE_KEY); },
     isAuthed() { return sessionStorage.getItem(AUTH_KEY) === '1'; },
     login(username, password) {
