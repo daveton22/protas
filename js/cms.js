@@ -6,6 +6,7 @@
   const LEADS_KEY = 'protas_cms_leads_v1';
   const ADMIN_USERNAME = 'viki123';
   const ADMIN_PASSWORD = 'amikom123';
+  const CONTENT_API_URL = '/api/content'; // endpoint di server.js — baca/tulis data.json
 
   function safeParse(json, fallback) {
     try { return JSON.parse(json) || fallback; } catch (_) { return fallback; }
@@ -21,8 +22,60 @@
     });
   }
 
+  /* ── SINKRONISASI KE BACKEND (server.js → data.json) ──
+     Situs ini tadinya cuma simpan perubahan di localStorage (per-browser,
+     tidak tersinkron antar perangkat). Sekarang state JUGA dikirim/diambil
+     dari server.js lewat fetch(), yang menulis/membaca file data.json —
+     pengganti database sesuai instruksi dosen (tanpa MySQL dkk).
+     localStorage TETAP dipakai sebagai cache lokal supaya panel admin
+     tetap terasa instan (baca/tulis synchronous), sementara data.json
+     di server jadi sumber data yang sesungguhnya permanen & bisa diakses
+     dari perangkat/browser lain. */
+
+  async function fetchContentFromServer() {
+    const res = await fetch(CONTENT_API_URL, { method: 'GET' });
+    if (!res.ok) throw new Error(`GET ${CONTENT_API_URL} gagal (status ${res.status})`);
+    return res.json();
+  }
+
+  async function pushContentToServer(state) {
+    const res = await fetch(CONTENT_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    });
+    if (!res.ok) throw new Error(`POST ${CONTENT_API_URL} gagal (status ${res.status})`);
+    return res.json();
+  }
+
+  /* Ambil data terbaru dari server, simpan ke localStorage, lalu render ulang.
+     Dipanggil saat index.html / admin.html pertama kali dibuka. Kalau server
+     belum dijalankan (mis. masih buka file HTML-nya langsung), gagal dengan
+     tenang dan tetap pakai data lokal yang sudah ada. */
+  async function syncContentFromServer() {
+    try {
+      const serverState = await fetchContentFromServer();
+      if (serverState && typeof serverState === 'object') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
+        applyCmsState(document);
+      }
+      return true;
+    } catch (err) {
+      console.warn('[ProTAS] Tidak bisa ambil data.json dari server.js (server belum jalan?). Memakai data lokal untuk sementara:', err.message);
+      return false;
+    }
+  }
+
   function setState(next) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    /* Kirim (POST) ke server supaya tersimpan permanen di data.json.
+       Fire-and-forget: TIDAK di-await, supaya panel admin tetap responsif
+       dan tidak menunggu jaringan setiap kali mengetik/mengubah warna.
+       Kalau server sedang tidak berjalan, perubahan tetap aman di localStorage
+       dan akan tersinkron lagi begitu server.js dijalankan & disimpan ulang. */
+    pushContentToServer(next).catch(err => {
+      console.warn('[ProTAS] Gagal sinkron ke server (perubahan tetap tersimpan di browser ini):', err.message);
+    });
   }
 
   function elementKey(el) {
@@ -172,10 +225,14 @@
     LEADS_KEY,
     ADMIN_USERNAME,
     ADMIN_PASSWORD,
+    CONTENT_API_URL,
     getState,
     setState,
     elementKey,
     applyCmsState,
+    fetchContentFromServer,
+    pushContentToServer,
+    syncContentFromServer,
     getLeads,
     addLead,
     deleteLead,

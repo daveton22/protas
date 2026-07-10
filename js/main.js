@@ -9,6 +9,15 @@
    Phone hover: pause float → lift via inline style
 ═══════════════════════════════════════════════════════ */
 
+/* ── SINKRONISASI KONTEN DARI SERVER (GET /api/content) ──
+   Begitu halaman ini dibuka, ambil versi konten terbaru dari data.json
+   lewat server.js — supaya pengunjung selalu melihat hasil edit admin
+   yang paling baru, bukan cuma yang kebetulan tersimpan di localStorage
+   browser ini. fetch() sesungguhnya ada di js/cms.js (syncContentFromServer),
+   di sini kita cukup memanggilnya. Tidak di-await supaya halaman tetap
+   langsung tampil (data lokal dulu), lalu diperbarui begitu server menjawab. */
+window.ProTASCMS?.syncContentFromServer();
+
 /* ── NAVBAR SCROLL ── */
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {

@@ -1,0 +1,14 @@
+{
+  "name": "protas-3d-backend",
+  "version": "1.0.0",
+  "description": "Backend sederhana ProTAS 3D — menyimpan perubahan konten landing page ke data.json (tanpa database) sesuai instruksi dosen.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Fiki Fauzianto (23.11.5656) - Kelompok 10, Universitas Amikom Yogyakarta",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

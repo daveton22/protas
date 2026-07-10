@@ -1,0 +1,10 @@
+# Dependencies (regenerate dengan: npm install)
+node_modules/
+
+# Data hasil runtime — dibuat otomatis oleh server.js saat pertama kali dijalankan,
+# jadi tidak perlu ikut disimpan di version control.
+data.json
+
+# OS / editor
+.DS_Store
+*.log

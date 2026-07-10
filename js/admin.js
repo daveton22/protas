@@ -114,7 +114,25 @@
     showToast('Preview mobile aktif.');
   });
 
-  document.getElementById('saveState')?.addEventListener('click', () => showToast('Perubahan sudah tersimpan.'));
+  document.getElementById('saveState')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    const originalLabel = btn.textContent;
+    btn.textContent = 'Menyimpan...';
+    btn.disabled = true;
+    try {
+      /* Kirim (POST) isi state saat ini ke server.js, yang menuliskannya
+         ke data.json. setState() di setiap aksi edit sebenarnya SUDAH
+         mengirim otomatis (lihat js/cms.js), tombol ini memberi konfirmasi
+         eksplisit + menangani kalau ternyata server-nya belum menyala. */
+      await cms.pushContentToServer(cms.getState());
+      showToast('Tersimpan ke server (data.json). ✓');
+    } catch (err) {
+      showToast('Server tidak terjangkau — tersimpan di browser ini saja.');
+    } finally {
+      btn.textContent = originalLabel;
+      btn.disabled = false;
+    }
+  });
   document.getElementById('resetState')?.addEventListener('click', () => {
     const ok = confirm('Reset semua perubahan editor dan kembalikan landing page ke versi awal?');
     if (!ok) return;
@@ -635,5 +653,12 @@
 
   initGlobalControls();
   renderLeads();
-  requireAuth();
+
+  /* Ambil data terbaru dari server (GET /api/content) SEBELUM preview pertama
+     kali dibangun, supaya iframe & panel editor langsung menampilkan isi
+     data.json yang sesungguhnya — bukan localStorage lama yang kebetulan
+     masih tersisa di browser ini. Kalau server belum dijalankan lewat
+     "node server.js", ini gagal dengan tenang dan requireAuth() tetap
+     lanjut memakai data lokal seperti biasa. */
+  cms.syncContentFromServer().finally(requireAuth);
 })();
