@@ -24,6 +24,12 @@
   const leadsTableWrap = document.getElementById('leadsTableWrap');
   const exportLeadsCsvBtn = document.getElementById('exportLeadsCsv');
   const clearLeadsBtn = document.getElementById('clearLeadsBtn');
+  const backupModalBackdrop = document.getElementById('backupModalBackdrop');
+  const backupModalClose = document.getElementById('backupModalClose');
+  const openBackupBtn = document.getElementById('openBackup');
+  const downloadBackupBtn = document.getElementById('downloadBackupBtn');
+  const restoreBackupInput = document.getElementById('restoreBackupInput');
+  const backupStatus = document.getElementById('backupStatus');
 
   let frameDoc = null;
   let selectedSection = null;
@@ -244,6 +250,69 @@
      (iframe = window terpisah tapi origin sama, jadi event 'storage' nyampe ke sini) */
   window.addEventListener('storage', e => {
     if (e.key === cms.LEADS_KEY) renderLeads();
+  });
+
+  /* ── BACKUP / PULIHKAN (mitigasi hosting gratis yang bisa mereset data.json) ── */
+  function openBackupModal() {
+    if (backupStatus) backupStatus.textContent = '';
+    backupModalBackdrop?.classList.add('open');
+    backupModalBackdrop?.setAttribute('aria-hidden', 'false');
+  }
+  function closeBackupModal() {
+    backupModalBackdrop?.classList.remove('open');
+    backupModalBackdrop?.setAttribute('aria-hidden', 'true');
+  }
+  openBackupBtn?.addEventListener('click', openBackupModal);
+  backupModalClose?.addEventListener('click', closeBackupModal);
+  backupModalBackdrop?.addEventListener('click', e => { if (e.target === backupModalBackdrop) closeBackupModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && backupModalBackdrop?.classList.contains('open')) closeBackupModal();
+  });
+
+  downloadBackupBtn?.addEventListener('click', async () => {
+    try {
+      // Ambil versi TERBARU dari server dulu (bukan cuma localStorage), supaya
+      // backup yang diunduh benar-benar mencerminkan apa yang tersimpan di server.
+      const state = await cms.fetchContentFromServer().catch(() => getState());
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `protas-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      if (backupStatus) backupStatus.textContent = 'Backup berhasil diunduh ke perangkatmu.';
+    } catch (err) {
+      if (backupStatus) backupStatus.textContent = 'Gagal membuat file backup: ' + err.message;
+    }
+  });
+
+  restoreBackupInput?.addEventListener('change', async () => {
+    const file = restoreBackupInput.files?.[0];
+    if (!file) return;
+
+    const ok = confirm('Timpa konten yang sedang aktif dengan isi file backup ini?');
+    if (!ok) { restoreBackupInput.value = ''; return; }
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new Error('isi file bukan objek JSON yang valid');
+      }
+      setState(parsed);                          // localStorage (instan)
+      await cms.pushContentToServer(parsed);      // pastikan tersimpan ke data.json server
+      loadPreview();                              // segarkan preview dengan data hasil pulihkan
+      if (backupStatus) backupStatus.textContent = 'Data berhasil dipulihkan & dikirim ke server. ✓';
+      showToast('Data berhasil dipulihkan dari file backup.');
+    } catch (err) {
+      if (backupStatus) backupStatus.textContent = 'Gagal memulihkan: ' + err.message;
+      showToast('Gagal memulihkan dari file backup.');
+    } finally {
+      restoreBackupInput.value = '';
+    }
   });
 
   function rgbToHex(value) {

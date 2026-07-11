@@ -25,7 +25,7 @@ const fsp = require('fs').promises; // versi promise (async/await) — dipakai d
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // hosting seperti Render menentukan port lewat env var
 const DATA_FILE = path.join(__dirname, 'data.json');
 
 /* Bentuk data kosong default — persis sama dengan struktur "state"
@@ -110,10 +110,19 @@ app.use('/api', (req, res) => {
 });
 
 app.listen(PORT, () => {
+  const isHosted = !!process.env.RENDER; // Render otomatis mengisi env var ini
   console.log('─────────────────────────────────────────────────');
-  console.log(`  ProTAS 3D server berjalan di http://localhost:${PORT}`);
-  console.log(`  Landing page : http://localhost:${PORT}/index.html`);
-  console.log(`  Admin panel  : http://localhost:${PORT}/admin.html`);
+  console.log(`  ProTAS 3D server berjalan (port ${PORT})`);
+  if (!isHosted) {
+    console.log(`  Landing page : http://localhost:${PORT}/index.html`);
+    console.log(`  Admin panel  : http://localhost:${PORT}/admin.html`);
+  }
   console.log(`  Data konten  : ${DATA_FILE}`);
+  if (isHosted) {
+    console.log('  ⚠  Terdeteksi berjalan di Render free tier: filesystem-nya');
+    console.log('     ephemeral — data.json bisa reset saat service redeploy/restart/');
+    console.log('     spin-down (tidak ada trafik 15 menit). Unduh backup berkala lewat');
+    console.log('     tombol "💾 Backup" di admin.html. Detail: README.txt.');
+  }
   console.log('─────────────────────────────────────────────────');
 });

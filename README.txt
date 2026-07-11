@@ -112,4 +112,67 @@ File baru yang ditambahkan:
                       dari keadaan bersih)
   .gitignore       - supaya node_modules/ & data.json tidak ikut ke-commit
                       kalau proyek ini dimasukkan ke Git
+  render.yaml      - konfigurasi deploy otomatis untuk Render (opsional,
+                      lihat bagian "Deploy ke Hosting Sungguhan" di bawah)
+
+──────────────────────────────────────────
+UPDATE — Deploy ke Hosting Sungguhan (Render)
+──────────────────────────────────────────
+Kenapa tidak bisa di Netlify / Vercel / GitHub Pages?
+  Ketiganya adalah static/serverless hosting, bukan tempat menjalankan proses
+  Node.js yang terus menyala seperti server.js. GitHub Pages sama sekali tidak
+  menjalankan Node.js. Netlify & Vercel BISA menjalankan kode server, tapi
+  hanya dalam bentuk serverless function yang filesystem-nya read-only —
+  fs.writeFile() ke data.json akan gagal (error EROFS). Solusi resmi kedua
+  platform itu pun bukan file lokal, tapi produk object-storage terpisah
+  (Vercel Blob / Netlify Blobs) — di luar cakupan tugas "simpan ke file .json".
+
+Cara deploy ke Render (mendukung Node.js beneran):
+  1. Push folder proyek ini (semuanya, KECUALI node_modules & data.json —
+     sudah diatur otomatis lewat .gitignore) ke repo GitHub.
+  2. Ke https://render.com -> New -> Web Service -> connect repo GitHub tadi.
+  3. Isi konfigurasi (atau biarkan Render membaca render.yaml otomatis kalau
+     pilih "New -> Blueprint" alih-alih "New -> Web Service"):
+       Build Command : npm install
+       Start Command : node server.js
+       Plan          : Free
+  4. Klik Deploy. Setelah selesai, Render kasih URL seperti
+     https://protas-3d.onrender.com — landing page & admin ada di situ, di
+     path yang sama (/index.html, /admin.html), karena server.js men-serve
+     keduanya sekaligus lewat satu proses yang sama (tidak perlu setting
+     CORS/origin terpisah).
+  5. Arahkan domain yang sudah kamu beli: di dashboard Render, buka service
+     ini -> Settings -> Custom Domains -> tambahkan domainmu -> ikuti
+     instruksi Render untuk menambahkan record CNAME/A di pengaturan DNS
+     domainmu (menunya beda-beda tergantung tempat beli domain, tapi
+     pola/istilahnya sama: "Custom Domain" atau "DNS Management").
+
+⚠ PENTING — Batasan tingkat gratis Render (dikonfirmasi dari dokumentasi resmi):
+  Free web service di Render punya filesystem EPHEMERAL — semua perubahan file
+  lokal (termasuk data.json) HILANG setiap kali service redeploy, restart,
+  ATAU spin-down. Service gratis otomatis spin-down setelah 15 menit tanpa
+  trafik sama sekali. Jadi kalau situsmu sepi pengunjung, data.json bisa balik
+  ke kosong/default begitu ada yang buka lagi. Ini BUKAN bug dari kode kita —
+  penyimpanan file yang benar-benar permanen di Render adalah fitur berbayar
+  (persistent disk).
+
+  Mitigasi yang sudah disiapkan di proyek ini (masih dalam batas gratis, tanpa
+  bayar apa pun):
+    - Tombol "💾 Backup" di admin.html -> "Unduh Backup" untuk menyimpan
+      data.json ke komputermu kapan saja (terutama sebelum demo ke dosen),
+      dan "Pulihkan dari File" untuk mengembalikannya kalau ternyata sempat
+      ter-reset. Simpan file backup-nya baik-baik!
+    - (Opsional) Supaya service jarang sekali spin-down, daftarkan URL
+      Render-mu ke layanan monitoring gratis seperti UptimeRobot atau
+      cron-job.org, atur supaya di-ping setiap 5-10 menit. Ini MENGURANGI
+      risiko reset akibat idle, tapi tidak menjamin 100% (Render tetap bisa
+      me-restart service kapan saja untuk keperluan maintenance mereka).
+    - Kalau nanti butuh persistensi yang benar-benar terjamin (misalnya pas
+      sidang/demo penting), Render punya add-on "Persistent Disk" berbayar
+      (harga per GB, cek render.com/docs/disks) yang tinggal dipasang tanpa
+      ubah kode sama sekali — data.json otomatis ikut aman lintas restart.
+
+Cara menjalankan (tanpa server) di bagian atas README ini tetap berlaku persis
+sama di Render: kalau karena suatu hal fetch() ke /api/content gagal, situs
+tetap jalan pakai localStorage sebagai fallback.
 

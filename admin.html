@@ -25,6 +25,7 @@
         <button class="admin-btn admin-btn-soft" id="previewTablet" type="button">Tablet</button>
         <button class="admin-btn admin-btn-soft" id="previewMobile" type="button">Mobile</button>
         <button class="admin-btn admin-btn-soft" id="openLeads" type="button">📋 Prospek<span class="leads-badge" id="leadsBadge">0</span></button>
+        <button class="admin-btn admin-btn-soft" id="openBackup" type="button">💾 Backup</button>
         <button class="admin-btn admin-btn-primary" id="saveState" type="button">Simpan</button>
         <button class="admin-btn admin-btn-danger" id="resetState" type="button">Reset</button>
         <button class="admin-btn admin-btn-soft" id="logoutBtn" type="button">Keluar</button>
@@ -107,6 +108,21 @@
   </section>
 
   <div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
+
+  <div class="leads-modal-backdrop" id="backupModalBackdrop" aria-hidden="true">
+    <div class="leads-modal" style="width:min(560px,100%)" role="dialog" aria-modal="true" aria-labelledby="backupModalTitle">
+      <button class="leads-modal-close" id="backupModalClose" type="button" aria-label="Tutup">×</button>
+      <p class="login-eyebrow" style="margin-bottom:4px">Data Konten</p>
+      <h2 id="backupModalTitle">Backup &amp; Pulihkan</h2>
+      <p class="leads-modal-desc">Hosting gratis bisa mereset <code>data.json</code> saat service sedang tidak ada trafik. Unduh cadangan secara berkala — terutama sebelum demo ke dosen — supaya bisa dipulihkan kalau kontenmu tiba-tiba kembali ke tampilan default.</p>
+      <div class="leads-modal-actions">
+        <button class="admin-btn admin-btn-soft" id="downloadBackupBtn" type="button">⬇ Unduh Backup</button>
+        <label class="admin-btn admin-btn-soft backup-restore-label" id="restoreBackupLabel" for="restoreBackupInput">⬆ Pulihkan dari File</label>
+        <input type="file" id="restoreBackupInput" accept="application/json" hidden>
+      </div>
+      <p class="backup-status" id="backupStatus" aria-live="polite"></p>
+    </div>
+  </div>
 
   <div class="leads-modal-backdrop" id="leadsModalBackdrop" aria-hidden="true">
     <div class="leads-modal" role="dialog" aria-modal="true" aria-labelledby="leadsModalTitle">

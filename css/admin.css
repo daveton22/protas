@@ -365,3 +365,22 @@ details.editor-box summary { cursor: pointer; font-weight: 900; }
   .leads-table-wrap { overflow-x: auto; }
   .leads-table { min-width: 620px; }
 }
+
+/* ── BACKUP / PULIHKAN ── */
+.backup-restore-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.backup-status {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--admin-muted);
+  min-height: 18px;
+}
+.leads-modal-desc code {
+  background: rgba(255,255,255,.08);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+}

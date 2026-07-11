@@ -1,0 +1,21 @@
+# render.yaml — Blueprint deploy otomatis untuk Render (https://render.com)
+#
+# Cara pakai:
+#   1. Push folder proyek ini ke repo GitHub.
+#   2. Di dashboard Render: New -> Blueprint -> pilih repo ini.
+#   3. Render otomatis baca file ini dan mengisi konfigurasi di bawah.
+#   4. Klik Apply/Deploy.
+#
+# Kalau lebih suka setting manual lewat dashboard (tanpa file ini), cukup pilih
+# New -> Web Service, lalu isi Build Command & Start Command sama seperti di bawah.
+
+services:
+  - type: web
+    name: protas-3d
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
